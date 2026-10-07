@@ -2,6 +2,7 @@
 using Portfolio.Application.Interfaces;
 using Portfolio.Domain.Entities;
 using Portfolio.Domain.Enums;
+using Portfolio.Infrastructure.Data;
 using System;
 using System.Threading.Tasks;
 
@@ -9,7 +10,14 @@ namespace Portfolio.Application.Services
 {
     public class TicketService : ITicketService
     {
-        public Task<TicketResponse> CreateAsync(CreateTicketRequest request)
+        private readonly PortfolioDbContext _context;
+
+        public TicketService(PortfolioDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<TicketResponse> CreateAsync(CreateTicketRequest request)
         {
             var ticket = new Ticket
             {
@@ -21,7 +29,11 @@ namespace Portfolio.Application.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            var response = new TicketResponse
+            _context.Tickets.Add(ticket);
+
+            await _context.SaveChangesAsync();
+
+            return new TicketResponse
             {
                 Id = ticket.Id,
                 Title = ticket.Title,
@@ -29,9 +41,7 @@ namespace Portfolio.Application.Services
                 Priority = ticket.Priority,
                 Status = ticket.Status,
                 CreatedAt = ticket.CreatedAt
-            };
-
-            return Task.FromResult(response);
+            };            
         }
     }
 }
