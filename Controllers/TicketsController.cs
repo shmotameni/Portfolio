@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Portfolio.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TicketsController : ControllerBase
     {
         private readonly ITicketService _ticketService;
@@ -20,12 +20,12 @@ namespace Portfolio.Controllers
             _ticketService = ticketService;
         }
 
-        private readonly ILogger<TicketsController> _logger;
+        ////private readonly ILogger<TicketsController> _logger;
 
-        public TicketsController(ILogger<TicketsController> logger)
-        {
-            _logger = logger;
-        }
+        ////public TicketsController(ILogger<TicketsController> logger)
+        ////{
+        ////    _logger = logger;
+        ////}
 
         [HttpPost]
         public async Task<ActionResult<TicketResponse>> Create(CreateTicketRequest request)
