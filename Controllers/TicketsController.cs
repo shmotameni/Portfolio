@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Portfolio.Application.DTOs;
+﻿using Portfolio.Application.DTOs;
 using Portfolio.Application.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Portfolio.Controllers
 {
@@ -33,6 +30,27 @@ namespace Portfolio.Controllers
             var result = await _ticketService.CreateAsync(request);
 
             return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<TicketResponse>>> GetAll()
+        {
+            var tickets = await _ticketService.GetAllAsync();
+
+            return Ok(tickets);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TicketResponse>> GetById(int id)
+        {
+            var ticket = await _ticketService.GetByIdAsync(id);
+
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(ticket);
         }
     }
 }

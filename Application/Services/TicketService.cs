@@ -1,9 +1,12 @@
-﻿using Portfolio.Application.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using Portfolio.Application.DTOs;
 using Portfolio.Application.Interfaces;
 using Portfolio.Domain.Entities;
 using Portfolio.Domain.Enums;
 using Portfolio.Infrastructure.Data;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Portfolio.Application.Services
@@ -42,6 +45,41 @@ namespace Portfolio.Application.Services
                 Status = ticket.Status,
                 CreatedAt = ticket.CreatedAt
             };            
+        }
+
+        public async Task<List<TicketResponse>> GetAllAsync()
+        {
+            var tickets = await _context.Tickets.ToListAsync();
+
+            return tickets.Select(ticket => new TicketResponse
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                Status = ticket.Status,
+                Priority = ticket.Priority,
+                CreatedAt = ticket.CreatedAt
+            }).ToList();
+        }
+
+        public async Task<TicketResponse> GetByIdAsync(int id)
+        {
+            var ticket = await _context.Tickets.FindAsync(id);
+
+            if (ticket == null)
+            {
+                return null;
+            }
+
+            return new TicketResponse
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                Status = ticket.Status,
+                Priority = ticket.Priority,
+                CreatedAt = ticket.CreatedAt
+            };
         }
     }
 }
