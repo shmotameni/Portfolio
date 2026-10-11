@@ -8,6 +8,10 @@ namespace Portfolio.Application.Interfaces
     {
         Task<TicketResponse> CreateAsync(CreateTicketRequest request);
 
+        Task<TicketResponse> UpdateAsync(int id, UpdateTicketRequest request);
+
+        Task<bool> DeleteAsync(int id);
+
         Task<List<TicketResponse>> GetAllAsync();
 
         Task<TicketResponse> GetByIdAsync(int id);

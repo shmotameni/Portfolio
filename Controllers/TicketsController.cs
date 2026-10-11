@@ -32,6 +32,32 @@ namespace Portfolio.Controllers
             return Ok(result);
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<TicketResponse>> Update(int id, UpdateTicketRequest request)
+        {
+            var result = await _ticketService.UpdateAsync(id, request);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _ticketService.DeleteAsync(id);
+
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
         [HttpGet]
         public async Task<ActionResult<List<TicketResponse>>> GetAll()
         {
