@@ -47,6 +47,50 @@ namespace Portfolio.Application.Services
             };            
         }
 
+        public async Task<TicketResponse> UpdateAsync(int id, UpdateTicketRequest request)
+        {
+            var ticket = await _context.Tickets.FindAsync(id);
+
+            if (ticket == null)
+            {
+                return null;
+            }
+
+            ticket.Title = request.Title;
+            ticket.Description = request.Description;
+            ticket.Status = request.Status;
+            ticket.Priority = request.Priority;
+            ticket.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return new TicketResponse
+            {
+                Id = ticket.Id,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                Status = ticket.Status,
+                Priority = ticket.Priority,
+                CreatedAt = ticket.CreatedAt
+            };
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var ticket = await _context.Tickets.FindAsync(id);
+
+            if (ticket == null)
+            {
+                return false;
+            }
+
+            _context.Tickets.Remove(ticket);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<List<TicketResponse>> GetAllAsync()
         {
             var tickets = await _context.Tickets.ToListAsync();
