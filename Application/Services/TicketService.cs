@@ -27,7 +27,7 @@ namespace Portfolio.Application.Services
                 Id = 1,
                 Title = request.Title,
                 Description = request.Description,
-                Priority = request.Priority,
+                Priority = request.Priority.Value,
                 Status = TicketStatus.Open,
                 CreatedAt = DateTime.UtcNow
             };
@@ -58,8 +58,8 @@ namespace Portfolio.Application.Services
 
             ticket.Title = request.Title;
             ticket.Description = request.Description;
-            ticket.Status = request.Status;
-            ticket.Priority = request.Priority;
+            ticket.Status = request.Status.Value;
+            ticket.Priority = request.Priority.Value;
             ticket.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
