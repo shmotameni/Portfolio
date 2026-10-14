@@ -59,9 +59,9 @@ namespace Portfolio.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<TicketResponse>>> GetAll()
+        public async Task<ActionResult<List<TicketResponse>>> GetAll([FromQuery] TicketFilterRequest filter)
         {
-            var tickets = await _ticketService.GetAllAsync();
+            var tickets = await _ticketService.GetAllAsync(filter);
 
             return Ok(tickets);
         }
