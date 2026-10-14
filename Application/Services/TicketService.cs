@@ -91,11 +91,25 @@ namespace Portfolio.Application.Services
             return true;
         }
 
-        public async Task<List<TicketResponse>> GetAllAsync()
+        public async Task<List<TicketResponse>> GetAllAsync(TicketFilterRequest filter)
         {
-            var tickets = await _context.Tickets.ToListAsync();
+            var tickets = _context.Tickets.AsNoTracking().AsQueryable();
+           
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                var search = filter.Search.Trim();
+                tickets = tickets.Where(t => t.Title.Contains(search));
+            }
 
-            return tickets.Select(ticket => new TicketResponse
+            if (filter.Priority.HasValue)
+            {
+                tickets = tickets.Where(t => t.Priority == filter.Priority.Value);
+            }
+
+            tickets = filter.SortAscending ? tickets.OrderBy(t => t.CreatedAt).ThenBy(t => t.Id)
+                                           : tickets.OrderByDescending(t => t.CreatedAt).ThenByDescending(t => t.Id);
+
+            return await tickets.Select(ticket => new TicketResponse
             {
                 Id = ticket.Id,
                 Title = ticket.Title,
@@ -103,7 +117,7 @@ namespace Portfolio.Application.Services
                 Status = ticket.Status,
                 Priority = ticket.Priority,
                 CreatedAt = ticket.CreatedAt
-            }).ToList();
+            }).ToListAsync();
         }
 
         public async Task<TicketResponse> GetByIdAsync(int id)
