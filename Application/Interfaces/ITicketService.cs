@@ -12,7 +12,7 @@ namespace Portfolio.Application.Interfaces
 
         Task<bool> DeleteAsync(int id);
 
-        Task<List<TicketResponse>> GetAllAsync(TicketFilterRequest filter);
+        Task<PagedResult<TicketResponse>> GetAllAsync(TicketFilterRequest filter);
 
         Task<TicketResponse> GetByIdAsync(int id);
     }
