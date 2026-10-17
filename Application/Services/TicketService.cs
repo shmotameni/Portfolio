@@ -44,7 +44,7 @@ namespace Portfolio.Application.Services
                 Priority = ticket.Priority,
                 Status = ticket.Status,
                 CreatedAt = ticket.CreatedAt
-            };            
+            };
         }
 
         public async Task<TicketResponse> UpdateAsync(int id, UpdateTicketRequest request)
@@ -91,14 +91,19 @@ namespace Portfolio.Application.Services
             return true;
         }
 
-        public async Task<List<TicketResponse>> GetAllAsync(TicketFilterRequest filter)
+        public async Task<PagedResult<TicketResponse>> GetAllAsync(TicketFilterRequest filter)
         {
             var tickets = _context.Tickets.AsNoTracking().AsQueryable();
-           
+
             if (!string.IsNullOrWhiteSpace(filter.Search))
             {
                 var search = filter.Search.Trim();
                 tickets = tickets.Where(t => t.Title.Contains(search));
+            }
+
+            if (filter.Status.HasValue)
+            {
+                tickets = tickets.Where(t => t.Status == filter.Status.Value);
             }
 
             if (filter.Priority.HasValue)
@@ -106,18 +111,39 @@ namespace Portfolio.Application.Services
                 tickets = tickets.Where(t => t.Priority == filter.Priority.Value);
             }
 
+            var totalCount = await tickets.CountAsync();
+
             tickets = filter.SortAscending ? tickets.OrderBy(t => t.CreatedAt).ThenBy(t => t.Id)
                                            : tickets.OrderByDescending(t => t.CreatedAt).ThenByDescending(t => t.Id);
 
-            return await tickets.Select(ticket => new TicketResponse
+            var skip = ((long)filter.PageNumber - 1) * filter.PageSize;
+
+            var ticketsResult = await tickets
+                        .Skip((int)Math.Min(skip, int.MaxValue))
+                        .Take(filter.PageSize)
+                        .Select(t => new TicketResponse
+                        {
+                            Id = t.Id,
+                            Title = t.Title,
+                            Description = t.Description,
+                            Status = t.Status,
+                            Priority = t.Priority,
+                            CreatedAt = t.CreatedAt
+                        })
+                        .ToListAsync();
+
+            var totalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize);
+
+            return new PagedResult<TicketResponse>
             {
-                Id = ticket.Id,
-                Title = ticket.Title,
-                Description = ticket.Description,
-                Status = ticket.Status,
-                Priority = ticket.Priority,
-                CreatedAt = ticket.CreatedAt
-            }).ToListAsync();
+                Items = ticketsResult,
+                TotalCount = totalCount,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalPages = totalPages,
+                HasPreviousPage = filter.PageNumber > 1 && totalPages > 0,
+                HasNextPage = filter.PageNumber < totalPages
+            };
         }
 
         public async Task<TicketResponse> GetByIdAsync(int id)
