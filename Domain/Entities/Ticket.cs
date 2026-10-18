@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Portfolio.Domain.Enums;
 
 namespace Portfolio.Domain.Entities
@@ -18,5 +19,7 @@ namespace Portfolio.Domain.Entities
         public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
+
+        public ICollection<TicketComment> Comments { get; set; } = new List<TicketComment>();
     }
 }
