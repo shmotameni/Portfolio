@@ -33,6 +33,7 @@ namespace Portfolio
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portfolio", Version = "v1" });
             });
+            services.AddScoped<ITicketCommentService, TicketCommentService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

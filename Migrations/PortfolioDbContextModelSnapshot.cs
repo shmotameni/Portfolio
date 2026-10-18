@@ -48,6 +48,52 @@ namespace Portfolio.Migrations
 
                     b.ToTable("Tickets");
                 });
+
+            modelBuilder.Entity("Portfolio.Domain.Entities.TicketComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("TicketComments");
+                });
+
+            modelBuilder.Entity("Portfolio.Domain.Entities.TicketComment", b =>
+                {
+                    b.HasOne("Portfolio.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("Comments")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("Portfolio.Domain.Entities.Ticket", b =>
+                {
+                    b.Navigation("Comments");
+                });
 #pragma warning restore 612, 618
         }
     }

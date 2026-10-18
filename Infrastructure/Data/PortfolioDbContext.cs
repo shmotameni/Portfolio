@@ -9,10 +9,31 @@ namespace Portfolio.Infrastructure.Data
 {
     public class PortfolioDbContext : DbContext
     {
-        public PortfolioDbContext(DbContextOptions<PortfolioDbContext> options) : base(options)
-        {
-        }
-
+        public PortfolioDbContext(DbContextOptions<PortfolioDbContext> options) : base(options) { }
+      
         public DbSet<Ticket> Tickets { get; set; }
+       
+        public DbSet<TicketComment> TicketComments { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<TicketComment>()
+                .HasOne(c => c.Ticket)
+                .WithMany(t => t.Comments)
+                .HasForeignKey(c => c.TicketId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TicketComment>()
+                .Property(c => c.AuthorName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<TicketComment>()
+                .Property(c => c.Content)
+                .IsRequired()
+                .HasMaxLength(2000);
+        }
     }
 }
