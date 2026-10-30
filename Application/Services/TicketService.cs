@@ -32,6 +32,13 @@ namespace Portfolio.Application.Services
                 CreatedAt = DateTime.UtcNow
             };
 
+            ticket.Activities.Add(new TicketActivity
+            {
+                Type = TicketActivityType.Created,
+                Description = "Ticket created.",
+                CreatedAt = DateTime.UtcNow
+            });
+
             _context.Tickets.Add(ticket);
 
             await _context.SaveChangesAsync();
@@ -50,17 +57,42 @@ namespace Portfolio.Application.Services
         public async Task<TicketResponse> UpdateAsync(int id, UpdateTicketRequest request)
         {
             var ticket = await _context.Tickets.FindAsync(id);
-
+            
             if (ticket == null)
             {
                 return null;
             }
 
+            var oldStatus = ticket.Status;
+            var oldPriority = ticket.Priority;
+
             ticket.Title = request.Title;
             ticket.Description = request.Description;
             ticket.Status = request.Status.Value;
             ticket.Priority = request.Priority.Value;
-            ticket.UpdatedAt = DateTime.UtcNow;
+            ticket.UpdatedAt = DateTime.UtcNow;                      
+
+            if (oldStatus != ticket.Status)
+            {
+                _context.TicketActivities.Add(new TicketActivity
+                {
+                    TicketId = ticket.Id,
+                    Type = TicketActivityType.StatusChanged,
+                    Description = $"Status changed from {oldStatus} to {ticket.Status}.",
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+
+            if (oldPriority != ticket.Priority)
+            {
+                _context.TicketActivities.Add(new TicketActivity
+                {
+                    TicketId = ticket.Id,
+                    Type = TicketActivityType.PriorityChanged,
+                    Description = $"Priority changed from {oldPriority} to {ticket.Priority}.",
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
 
             await _context.SaveChangesAsync();
 

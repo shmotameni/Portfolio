@@ -2,6 +2,7 @@
 using Portfolio.Application.DTOs;
 using Portfolio.Application.Interfaces;
 using Portfolio.Domain.Entities;
+using Portfolio.Domain.Enums;
 using Portfolio.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,14 @@ namespace Portfolio.Application.Services
             };
 
             _context.TicketComments.Add(comment);
+
+            _context.TicketActivities.Add(new TicketActivity
+            {
+                TicketId = ticketId,
+                Type = TicketActivityType.CommentAdded,
+                Description = "A comment was added.",
+                CreatedAt = DateTime.UtcNow
+            });
 
             await _context.SaveChangesAsync();
 

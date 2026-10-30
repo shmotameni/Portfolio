@@ -15,6 +15,8 @@ namespace Portfolio.Infrastructure.Data
        
         public DbSet<TicketComment> TicketComments { get; set; }
 
+        public DbSet<TicketActivity> TicketActivities { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -34,6 +36,17 @@ namespace Portfolio.Infrastructure.Data
                 .Property(c => c.Content)
                 .IsRequired()
                 .HasMaxLength(2000);
+
+            modelBuilder.Entity<TicketActivity>()
+                .HasOne(a => a.Ticket)
+                .WithMany(t => t.Activities)
+                .HasForeignKey(a => a.TicketId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TicketActivity>()
+                .Property(a => a.Description)
+                .IsRequired()
+                .HasMaxLength(500);
         }
     }
 }
