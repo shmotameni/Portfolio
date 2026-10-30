@@ -21,5 +21,7 @@ namespace Portfolio.Domain.Entities
         public DateTime? UpdatedAt { get; set; }
 
         public ICollection<TicketComment> Comments { get; set; } = new List<TicketComment>();
+
+        public ICollection<TicketActivity> Activities { get; set; } = new List<TicketActivity>();
     }
 }

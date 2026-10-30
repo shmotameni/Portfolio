@@ -49,6 +49,34 @@ namespace Portfolio.Migrations
                     b.ToTable("Tickets");
                 });
 
+            modelBuilder.Entity("Portfolio.Domain.Entities.TicketActivity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("TicketActivities");
+                });
+
             modelBuilder.Entity("Portfolio.Domain.Entities.TicketComment", b =>
                 {
                     b.Property<int>("Id")
@@ -79,6 +107,17 @@ namespace Portfolio.Migrations
                     b.ToTable("TicketComments");
                 });
 
+            modelBuilder.Entity("Portfolio.Domain.Entities.TicketActivity", b =>
+                {
+                    b.HasOne("Portfolio.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("Activities")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+                });
+
             modelBuilder.Entity("Portfolio.Domain.Entities.TicketComment", b =>
                 {
                     b.HasOne("Portfolio.Domain.Entities.Ticket", "Ticket")
@@ -92,6 +131,8 @@ namespace Portfolio.Migrations
 
             modelBuilder.Entity("Portfolio.Domain.Entities.Ticket", b =>
                 {
+                    b.Navigation("Activities");
+
                     b.Navigation("Comments");
                 });
 #pragma warning restore 612, 618
