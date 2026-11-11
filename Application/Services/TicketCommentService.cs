@@ -62,8 +62,7 @@ namespace Portfolio.Application.Services
             };
         }
 
-        public async Task<List<TicketCommentResponse>> GetByTicketIdAsync(
-            int ticketId)
+        public async Task<List<TicketCommentResponse>> GetByTicketIdAsync(int ticketId)
         {
             return await _context.TicketComments
                 .AsNoTracking()

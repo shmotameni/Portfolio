@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Portfolio.Domain.Enums;
 
 namespace Portfolio.Application.DTOs
